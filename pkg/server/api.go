@@ -2,19 +2,20 @@ package server
 
 import (
 	"github.com/gorilla/mux"
-	// recipe "github.com/mikeletux/home-recipes/pkg"
+	recipe "github.com/mikeletux/home-recipes/pkg"
 	"net/http"
 )
 
 type api struct {
-	router http.Handler
+	router  http.Handler
+	storage recipe.RecipeRepository
 }
 
 type Server interface {
 	Router() http.Handler
 }
 
-func New() Server {
+func New(repo recipe.RecipeRepository) Server {
 	a := &api{}
 
 	r := mux.NewRouter()
@@ -22,6 +23,8 @@ func New() Server {
 	r.HandleFunc("/recipes/{ID:[a-zA-Z0-9_]+}", a.fetchRecipe).Methods(http.MethodGet)
 
 	a.router = r
+	a.storage = repo
+
 	return a
 }
 
