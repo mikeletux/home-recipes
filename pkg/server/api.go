@@ -1,6 +1,7 @@
 package server
 
 import (
+	"encoding/json"
 	"github.com/gorilla/mux"
 	recipe "github.com/mikeletux/home-recipes/pkg"
 	"net/http"
@@ -32,5 +33,21 @@ func (a *api) Router() http.Handler {
 	return a.router
 }
 
-func (a *api) fetchRecipes(w http.ResponseWriter, r *http.Request) {}
-func (a *api) fetchRecipe(w http.ResponseWriter, r *http.Request)  {}
+func (a *api) fetchRecipes(w http.ResponseWriter, r *http.Request) {
+	recipes, _ := a.storage.FetchAllRecipes()
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(recipes)
+}
+
+func (a *api) fetchRecipe(w http.ResponseWriter, r *http.Request) {
+	//Get vars
+	vars := mux.Vars(r)
+	recipe, err := a.storage.FetchRecipeByID(vars["ID"])
+	w.Header().Set("Content-Type", "application/json")
+	if err != nil {
+		w.WriteHeader(http.StatusNotFound)
+		json.NewEncoder(w).Encode("Recipe not found")
+		return
+	}
+	json.NewEncoder(w).Encode(recipe)
+}
