@@ -22,6 +22,5 @@ func main() {
 	}
 	storage := localstorage.NewLocalStorage(recipes)
 	s := server.New(storage)
-	fmt.Println(fmt.Sprintf(":%d", *port))
 	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%d", *port), s.Router()))
 }

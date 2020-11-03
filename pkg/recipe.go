@@ -1,7 +1,7 @@
 package recipe
 
 type Recipe struct {
-	ID          string   `json:"ID"`
+	ID          string   `json:"ID,omitempty"`
 	Name        string   `json:"name,omitempty"`
 	Image       string   `json:"image,omitempty"`
 	Ingredients []string `json:"ingredients,omitempty"`
@@ -11,4 +11,7 @@ type Recipe struct {
 type RecipeRepository interface {
 	FetchRecipeByID(ID string) (*Recipe, error)
 	FetchAllRecipes() ([]*Recipe, error)
+	CreateRecipe(recipe *Recipe) error
+	DeleteRecipe(ID string) error
+	UpdateRecipe(ID string, recipe *Recipe) error
 }

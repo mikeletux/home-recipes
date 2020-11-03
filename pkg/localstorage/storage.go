@@ -3,6 +3,7 @@ package localstorage
 import (
 	"fmt"
 	recipe "github.com/mikeletux/home-recipes/pkg"
+	"github.com/rs/xid"
 	"sync"
 )
 
@@ -40,4 +41,27 @@ func (l *LocalStorage) FetchAllRecipes() ([]*recipe.Recipe, error) {
 		values = append(values, v)
 	}
 	return values, nil
+}
+
+func (l *LocalStorage) CreateRecipe(recipe *recipe.Recipe) error {
+	l.mux.Lock()
+	defer l.mux.Unlock()
+	guid := xid.New()
+	recipe.ID = guid.String()
+	l.recipes[guid.String()] = recipe
+	return nil
+}
+
+func (l *LocalStorage) DeleteRecipe(ID string) error {
+	l.mux.Lock()
+	defer l.mux.Unlock()
+	if _, ok := l.recipes[ID]; !ok {
+		return fmt.Errorf("There's no recipe with such ID")
+	}
+	delete(l.recipes, ID)
+	return nil
+}
+
+func (l *LocalStorage) UpdateRecipe(ID string, recipe *recipe.Recipe) error {
+	return nil
 }
