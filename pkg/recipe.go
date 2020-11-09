@@ -1,11 +1,18 @@
 package recipe
 
+import (
+	// "encoding/json"
+	"time"
+)
+
 type Recipe struct {
-	ID          string   `json:"ID,omitempty"`
-	Name        string   `json:"name,omitempty"`
-	Image       string   `json:"image,omitempty"`
-	Ingredients []string `json:"ingredients,omitempty"`
-	Text        string   `json:"text,omitempty"`
+	ID           string    `json:"id,omitempty"`
+	Name         string    `json:"name,omitempty"`
+	Image        string    `json:"image,omitempty"`
+	Ingredients  []string  `json:"ingredients,omitempty"`
+	Text         string    `json:"text,omitempty"`
+	CreationTime time.Time `json:"creationTime,omitempty"`
+	UpdatedTime  time.Time `json:"updatedTime,omitempty"`
 }
 
 type RecipeRepository interface {

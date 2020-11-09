@@ -5,6 +5,7 @@ import (
 	recipe "github.com/mikeletux/home-recipes/pkg"
 	"github.com/rs/xid"
 	"sync"
+	"time"
 )
 
 type LocalStorage struct {
@@ -48,6 +49,10 @@ func (l *LocalStorage) CreateRecipe(recipe *recipe.Recipe) error {
 	defer l.mux.Unlock()
 	guid := xid.New()
 	recipe.ID = guid.String()
+	//Set creation and update time to recipe
+	time := time.Now()
+	recipe.CreationTime = time
+	recipe.UpdatedTime = time
 	l.recipes[guid.String()] = recipe
 	return nil
 }
