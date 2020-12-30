@@ -44,7 +44,7 @@ func (l *LocalStorage) FetchAllRecipes() ([]*recipe.Recipe, error) {
 	return values, nil
 }
 
-func (l *LocalStorage) CreateRecipe(recipe *recipe.Recipe) error {
+func (l *LocalStorage) CreateRecipe(recipe *recipe.Recipe) (string, error) {
 	l.mux.Lock()
 	defer l.mux.Unlock()
 	guid := xid.New()
@@ -54,7 +54,7 @@ func (l *LocalStorage) CreateRecipe(recipe *recipe.Recipe) error {
 	recipe.CreationTime = time
 	recipe.UpdatedTime = time
 	l.recipes[guid.String()] = recipe
-	return nil
+	return recipe.ID, nil
 }
 
 func (l *LocalStorage) DeleteRecipe(ID string) error {
@@ -68,5 +68,6 @@ func (l *LocalStorage) DeleteRecipe(ID string) error {
 }
 
 func (l *LocalStorage) UpdateRecipe(ID string, recipe *recipe.Recipe) error {
+	//TODO
 	return nil
 }

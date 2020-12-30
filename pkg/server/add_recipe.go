@@ -18,11 +18,13 @@ func (a *api) addRecipe(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	//Creation time is handled by the storage
-	err = a.storage.CreateRecipe(&newRecipe)
+	ID, err := a.storage.CreateRecipe(&newRecipe)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		json.NewEncoder(w).Encode(err)
 		return
 	}
-	w.WriteHeader(http.StatusAccepted)
+	//Write location header
+	w.Header().Set("Location", fmt.Sprintf("%s/%s", r.URL.RequestURI(), ID))
+	w.WriteHeader(http.StatusCreated)
 }

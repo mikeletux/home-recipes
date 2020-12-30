@@ -4,11 +4,19 @@ import (
 	"github.com/gorilla/mux"
 	recipe "github.com/mikeletux/home-recipes/pkg"
 	"net/http"
+	"fmt"
 )
 
+const (
+	recipesEndpoint = "/recipes"
+)
 type api struct {
 	router  http.Handler
 	storage recipe.RecipeRepository
+}
+
+func (a *api) Router() http.Handler {
+	return a.router
 }
 
 type Server interface {
@@ -20,18 +28,16 @@ func New(repo recipe.RecipeRepository) Server {
 
 	r := mux.NewRouter()
 	//Retrieve all recipes
-	r.HandleFunc("/recipes", a.fetchAllRecipes).Methods(http.MethodGet)
+	r.HandleFunc(recipesEndpoint, a.fetchAllRecipes).Methods(http.MethodGet)
 	//Add a recipe
-	r.HandleFunc("/recipes", a.addRecipe).Methods(http.MethodPost)
+	r.HandleFunc(recipesEndpoint, a.addRecipe).Methods(http.MethodPost)
 	//Retrieve specific recipe
-	r.HandleFunc("/recipes/{ID:[a-zA-Z0-9_]+}", a.fetchSpecificRecipe).Methods(http.MethodGet)
+	r.HandleFunc(fmt.Sprintf("%s/%s", recipesEndpoint, "{ID:[a-zA-Z0-9_]+}"), a.fetchSpecificRecipe).Methods(http.MethodGet)
+	//Delete a specific recipe
+	r.HandleFunc(fmt.Sprintf("%s/%s", recipesEndpoint, "{ID:[a-zA-Z0-9_]+}"), a.removeSpecificRecipe).Methods(http.MethodDelete)
 
 	a.router = r
 	a.storage = repo
 
 	return a
-}
-
-func (a *api) Router() http.Handler {
-	return a.router
 }

@@ -18,7 +18,7 @@ type Recipe struct {
 type RecipeRepository interface {
 	FetchRecipeByID(ID string) (*Recipe, error)
 	FetchAllRecipes() ([]*Recipe, error)
-	CreateRecipe(recipe *Recipe) error
+	CreateRecipe(recipe *Recipe) (string, error)
 	DeleteRecipe(ID string) error
 	UpdateRecipe(ID string, recipe *Recipe) error
 }
