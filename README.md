@@ -6,6 +6,23 @@ This little project aims to create a simple **Rest API** that can be a middlewar
 
 It is a simple app that doesn't focus on anything else rather than learning go, the *net/http* and the *gorilla mux* package.  
 
-Also it will be used as a sample app for creating a *docker image* out of it, as well as *CI/CD pipelines* probably using *Jenkins*.
+Also it will be used as a sample app for creating a *docker image* out of it, as well as *CI/CD pipelines* probably using *Jenkins*.  
 
-/Miguel Sama
+## Running home-recipes in a Docker container
+In order to run this app in a docker container, please follow the steps below:
+  - Create an image out of the Dockerfile
+    ~~~
+    docker build -t home-recipes .
+    ~~~
+  - Run the container
+    ~~~
+    docker run -d -p 8080:8080 \
+           -e "RECIPES_PORT=8080" \
+           -e "RECIPES_SAMPLE_DATA=yes" \
+           --name home-recipes home-recipes
+    ~~~
+    **Environment variables**  
+      - RECIPES_PORT: Port where the RestAPI is going to listen.
+      - RECIPES_SAMPLE_DATA: Either if you want to load some sample data (yes) or not (empty string).
+  
+/Miguel Sama 2021
