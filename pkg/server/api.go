@@ -21,6 +21,10 @@ func (a *api) Router() http.Handler {
 
 type Server interface {
 	Router() http.Handler
+	addRecipe(w http.ResponseWriter, r *http.Request)
+	fetchAllRecipes(w http.ResponseWriter, r *http.Request)
+	fetchSpecificRecipe(w http.ResponseWriter, r *http.Request)
+	removeSpecificRecipe(w http.ResponseWriter, r *http.Request)
 }
 
 func New(repo recipe.RecipeRepository) Server {
