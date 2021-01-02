@@ -9,10 +9,11 @@ import (
 	"io/ioutil"
 	"encoding/json"
 	recipe "github.com/mikeletux/home-recipes/pkg"
+	"fmt"
 )
 
 func TestFetchAllRecipes(t *testing.T) {
-	req, err := http.NewRequest("GET", "/api/v1/recipes", nil)
+	req, err := http.NewRequest("GET", fmt.Sprintf("/api/%s/%s", apiVersion,recipesEndpoint), nil)
 	if err != nil {
 		t.Fatalf("couldn't create request: %v", err)
 	}

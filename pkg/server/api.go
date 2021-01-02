@@ -4,11 +4,12 @@ import (
 	"github.com/gorilla/mux"
 	recipe "github.com/mikeletux/home-recipes/pkg"
 	"net/http"
-	//"fmt"
+	"fmt"
 )
 
 const (
-	recipesEndpoint = "/recipes"
+	apiVersion = "v1"
+	recipesEndpoint = "recipes"
 )
 type api struct {
 	router  http.Handler
@@ -31,15 +32,17 @@ func New(repo recipe.RecipeRepository) Server {
 	a := &api{}
 
 	r := mux.NewRouter()
-	recipeRouter := r.PathPrefix("/api/v1").Subrouter()
-	//Retrieve all recipes
-	recipeRouter.HandleFunc("/recipes", a.fetchAllRecipes).Methods(http.MethodGet)
-	//Add a recipe
-	recipeRouter.HandleFunc("/recipes", a.addRecipe).Methods(http.MethodPost)
-	//Retrieve specific recipe
-	recipeRouter.HandleFunc("/recipes/{ID:[a-zA-Z0-9_]+}", a.fetchSpecificRecipe).Methods(http.MethodGet)
-	//Delete a specific recipe
-	recipeRouter.HandleFunc("/recipes/{ID:[a-zA-Z0-9_]+}", a.removeSpecificRecipe).Methods(http.MethodDelete)
+	recipeRouter := r.PathPrefix(fmt.Sprintf("/api/%s", apiVersion)).Subrouter()
+	//Retrieve all recipes (GET /recipes)
+	recipeRouter.HandleFunc(fmt.Sprintf("/%s", recipesEndpoint), a.fetchAllRecipes).Methods(http.MethodGet)
+	//Add a recipe (POST /recipes)
+	recipeRouter.HandleFunc(fmt.Sprintf("/%s", recipesEndpoint), a.addRecipe).Methods(http.MethodPost)
+	//Fetch specific recipe (GET /recipes/{ID:[a-zA-Z0-9_]+})
+	recipeRouter.HandleFunc(fmt.Sprintf("/%s/{ID:[a-zA-Z0-9_]+}", recipesEndpoint), a.fetchSpecificRecipe).Methods(http.MethodGet)
+	//Delete a specific recipe (DELETE /recipes/{ID:[a-zA-Z0-9_]+})
+	recipeRouter.HandleFunc(fmt.Sprintf("/%s/{ID:[a-zA-Z0-9_]+}", recipesEndpoint), a.removeSpecificRecipe).Methods(http.MethodDelete)
+	//Update a specific recipe
+	//TBD
 
 	a.router = recipeRouter
 	a.storage = repo
