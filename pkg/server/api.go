@@ -5,6 +5,7 @@ import (
 	recipe "github.com/mikeletux/home-recipes/pkg"
 	"net/http"
 	"fmt"
+	"github.com/rs/cors"
 )
 
 const (
@@ -30,7 +31,7 @@ type Server interface {
 
 func New(repo recipe.RecipeRepository) Server {
 	a := &api{}
-
+	
 	r := mux.NewRouter()
 	recipeRouter := r.PathPrefix(fmt.Sprintf("/api/%s", apiVersion)).Subrouter()
 	//Retrieve all recipes (GET /recipes)
@@ -44,7 +45,8 @@ func New(repo recipe.RecipeRepository) Server {
 	//Update a specific recipe
 	//TBD
 
-	a.router = recipeRouter
+	//Set default CORS
+	a.router = cors.Default().Handler(recipeRouter)
 	a.storage = repo
 
 	return a
