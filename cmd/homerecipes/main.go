@@ -3,16 +3,18 @@ package main
 import (
 	"context"
 	"fmt"
-	"github.com/mikeletux/home-recipes/cmd/sample-data"
-	recipe "github.com/mikeletux/home-recipes/pkg"
-	"github.com/mikeletux/home-recipes/pkg/localstorage"
-	"github.com/mikeletux/home-recipes/pkg/server"
 	"log"
 	"net/http"
 	"os"
 	"os/signal"
 	"syscall"
 	"time"
+
+	data "github.com/mikeletux/home-recipes/cmd/sample-data"
+	recipe "github.com/mikeletux/home-recipes/pkg"
+	"github.com/mikeletux/home-recipes/pkg/guid"
+	"github.com/mikeletux/home-recipes/pkg/localstorage"
+	"github.com/mikeletux/home-recipes/pkg/server"
 )
 
 func main() {
@@ -26,7 +28,10 @@ func main() {
 		log.Print("Loading sample data into server")
 		recipes = data.SampleRecipes
 	}
-	storage := localstorage.NewLocalStorage(recipes)
+	//Initialize GUID struct
+	guid := guid.NewGuidXid()
+
+	storage := localstorage.NewLocalStorage(recipes, guid)
 	s := server.New(storage)
 
 	srv := http.Server{

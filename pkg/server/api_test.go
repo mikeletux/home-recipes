@@ -14,6 +14,7 @@ import (
 	"github.com/gorilla/mux"
 	data "github.com/mikeletux/home-recipes/cmd/sample-data"
 	recipe "github.com/mikeletux/home-recipes/pkg"
+	"github.com/mikeletux/home-recipes/pkg/guid"
 	"github.com/mikeletux/home-recipes/pkg/localstorage"
 )
 
@@ -38,8 +39,10 @@ func TestAddRecipe(t *testing.T) {
 		t.Fatalf("could not create mocked request %v", err)
 	}
 
+	//Initialize GUID struct
+	guid := guid.NewGuidXid()
 	//Create fake API
-	repo := localstorage.NewLocalStorage(data.SampleRecipes)
+	repo := localstorage.NewLocalStorage(data.SampleRecipes, guid)
 	a := New(repo)
 
 	//Create recorder
@@ -80,7 +83,10 @@ func TestFetchAllRecipes(t *testing.T) {
 		t.Fatalf("couldn't create request: %v", err)
 	}
 
-	repo := localstorage.NewLocalStorage(data.SampleRecipes)
+	//Initialize GUID struct
+	guid := guid.NewGuidXid()
+	//Create fake API
+	repo := localstorage.NewLocalStorage(data.SampleRecipes, guid)
 	a := New(repo)
 
 	//Set the recorder to check what the function is returning
@@ -133,8 +139,10 @@ func TestFetchSpecificRecipe(t *testing.T) {
 	}
 	req = mux.SetURLVars(req, vars)
 
+	//Initialize GUID struct
+	guid := guid.NewGuidXid()
 	//Create fake API
-	repo := localstorage.NewLocalStorage(data.SampleRecipes)
+	repo := localstorage.NewLocalStorage(data.SampleRecipes, guid)
 	a := New(repo)
 
 	//Create http recorder
@@ -175,8 +183,10 @@ func TestRemoveSpecificRecipe(t *testing.T) {
 	}
 	req = mux.SetURLVars(req, vars)
 
+	//Initialize GUID struct
+	guid := guid.NewGuidXid()
 	//Create fake API
-	repo := localstorage.NewLocalStorage(data.SampleRecipes)
+	repo := localstorage.NewLocalStorage(data.SampleRecipes, guid)
 	a := New(repo)
 
 	//Check if recipe exists before calling the handler

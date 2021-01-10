@@ -2,25 +2,28 @@ package localstorage
 
 import (
 	"fmt"
-	recipe "github.com/mikeletux/home-recipes/pkg"
-	"github.com/rs/xid"
 	"sync"
 	"time"
+
+	recipe "github.com/mikeletux/home-recipes/pkg"
+	"github.com/mikeletux/home-recipes/pkg/guid"
 )
 
 type LocalStorage struct {
-	recipes map[string]*recipe.Recipe
-	mux     sync.RWMutex
+	guidGenerator guid.Guid
+	recipes       map[string]*recipe.Recipe
+	mux           sync.RWMutex
 }
 
 // NewLocalStorage creates a local storage
-func NewLocalStorage(recipes map[string]*recipe.Recipe) *LocalStorage {
+func NewLocalStorage(recipes map[string]*recipe.Recipe, guidGenerator guid.Guid) *LocalStorage {
 	if recipes == nil {
 		recipes = make(map[string]*recipe.Recipe)
 	}
 
 	return &LocalStorage{
-		recipes: recipes,
+		guidGenerator: guidGenerator,
+		recipes:       recipes,
 	}
 }
 
@@ -47,13 +50,13 @@ func (l *LocalStorage) FetchAllRecipes() ([]*recipe.Recipe, error) {
 func (l *LocalStorage) CreateRecipe(recipe *recipe.Recipe) (string, error) {
 	l.mux.Lock()
 	defer l.mux.Unlock()
-	guid := xid.New()
-	recipe.ID = guid.String()
+	guid := l.guidGenerator.GetGUID()
+	recipe.ID = guid
 	//Set creation and update time to recipe
 	time := time.Now()
 	recipe.CreationTime = time
 	recipe.UpdatedTime = time
-	l.recipes[guid.String()] = recipe
+	l.recipes[guid] = recipe
 	return recipe.ID, nil
 }
 
