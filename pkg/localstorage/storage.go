@@ -97,9 +97,10 @@ func (l *LocalStorage) CreateRecipe(recipe *recipe.Recipe) (string, error) {
 	if len(l.filepath) > 0 {
 		err := writeToFile(l.filepath, l.recipes)
 		if err != nil {
+			//Remove recipe that couldn't be added
+			delete(l.recipes, recipe.ID)
 			return "", err
 		}
-		//TO-DO REMOVE RECIPE FROM MAP
 	}
 	return recipe.ID, nil
 }
@@ -110,13 +111,16 @@ func (l *LocalStorage) DeleteRecipe(ID string) error {
 	if _, ok := l.recipes[ID]; !ok {
 		return fmt.Errorf("There's no recipe with such ID")
 	}
+	recipeBackUp := *l.recipes[ID] //Grab the recibe in case writeToFile cannot save it, to restore it again into the memory map
+
 	delete(l.recipes, ID)
 	if len(l.filepath) > 0 {
 		err := writeToFile(l.filepath, l.recipes)
 		if err != nil {
+			//Recover recipe to map
+			l.recipes[ID] = &recipeBackUp
 			return err
 		}
-		//TO-DO RECOVER RECIPE TO MAP
 	}
 	return nil
 }

@@ -42,8 +42,8 @@ func TestAddRecipe(t *testing.T) {
 	//Initialize GUID struct
 	guid := guid.NewGuidXid()
 	//Create fake API
-	repo := localstorage.NewLocalStorage(data.SampleRecipes, guid)
-	a := New(repo)
+	repo := localstorage.NewLocalStorage(data.SampleRecipes, "", guid)
+	a := New(repo, nil)
 
 	//Create recorder
 	rec := httptest.NewRecorder()
@@ -86,8 +86,8 @@ func TestFetchAllRecipes(t *testing.T) {
 	//Initialize GUID struct
 	guid := guid.NewGuidXid()
 	//Create fake API
-	repo := localstorage.NewLocalStorage(data.SampleRecipes, guid)
-	a := New(repo)
+	repo := localstorage.NewLocalStorage(data.SampleRecipes, "", guid)
+	a := New(repo, nil)
 
 	//Set the recorder to check what the function is returning
 	rec := httptest.NewRecorder()
@@ -142,8 +142,8 @@ func TestFetchSpecificRecipe(t *testing.T) {
 	//Initialize GUID struct
 	guid := guid.NewGuidXid()
 	//Create fake API
-	repo := localstorage.NewLocalStorage(data.SampleRecipes, guid)
-	a := New(repo)
+	repo := localstorage.NewLocalStorage(data.SampleRecipes, "", guid)
+	a := New(repo, nil)
 
 	//Create http recorder
 	rec := httptest.NewRecorder()
@@ -186,8 +186,8 @@ func TestRemoveSpecificRecipe(t *testing.T) {
 	//Initialize GUID struct
 	guid := guid.NewGuidXid()
 	//Create fake API
-	repo := localstorage.NewLocalStorage(data.SampleRecipes, guid)
-	a := New(repo)
+	repo := localstorage.NewLocalStorage(data.SampleRecipes, "", guid)
+	a := New(repo, nil)
 
 	//Check if recipe exists before calling the handler
 	_, err = repo.FetchRecipeByID(sampleID)

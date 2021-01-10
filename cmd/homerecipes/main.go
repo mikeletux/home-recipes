@@ -12,6 +12,7 @@ import (
 
 	data "github.com/mikeletux/home-recipes/cmd/sample-data"
 	recipe "github.com/mikeletux/home-recipes/pkg"
+	"github.com/mikeletux/home-recipes/pkg/cors"
 	"github.com/mikeletux/home-recipes/pkg/guid"
 	"github.com/mikeletux/home-recipes/pkg/localstorage"
 	"github.com/mikeletux/home-recipes/pkg/server"
@@ -26,7 +27,7 @@ func main() {
 		envPort = "8080"
 	}
 
-	//Initialize GUID struct
+	//Initialize GUID struct to later on inject to LocalStorage
 	guid := guid.NewGuidXid()
 
 	var storage recipe.RecipeRepository
@@ -42,7 +43,10 @@ func main() {
 		storage = localstorage.NewLocalStorage(recipes, "", guid)
 	}
 
-	s := server.New(storage)
+	//Initialize Cors
+	corsEnabler := cors.NewRsCorsEnabler(nil) //nil will make the RSCors constructor to use the Default options
+	//Inject storage and cors enabler to the server constructor
+	s := server.New(storage, corsEnabler)
 
 	srv := http.Server{
 		Addr:    fmt.Sprintf(":%s", envPort),

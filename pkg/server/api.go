@@ -1,19 +1,21 @@
 package server
 
 import (
+	"encoding/json"
+	"fmt"
+	"net/http"
+	"time"
+
 	"github.com/gorilla/mux"
 	recipe "github.com/mikeletux/home-recipes/pkg"
-	"net/http"
-	"fmt"
-	"github.com/rs/cors"
-	"time"
-	"encoding/json"
+	"github.com/mikeletux/home-recipes/pkg/cors"
 )
 
 const (
-	apiVersion = "v1"
+	apiVersion      = "v1"
 	recipesEndpoint = "recipes"
 )
+
 type api struct {
 	router  http.Handler
 	storage recipe.RecipeRepository
@@ -31,9 +33,9 @@ type Server interface {
 	removeSpecificRecipe(w http.ResponseWriter, r *http.Request)
 }
 
-func New(repo recipe.RecipeRepository) Server {
+func New(repo recipe.RecipeRepository, corsEnabler cors.CorsEnabler) Server {
 	a := &api{}
-	
+
 	r := mux.NewRouter()
 	recipeRouter := r.PathPrefix(fmt.Sprintf("/api/%s", apiVersion)).Subrouter()
 	//Retrieve all recipes (GET /recipes)
@@ -47,8 +49,13 @@ func New(repo recipe.RecipeRepository) Server {
 	//Update a specific recipe
 	//TBD
 
-	//Set default CORS
-	a.router = cors.Default().Handler(recipeRouter)
+	//If interface is different from nil, wrap handler. Otherwise set it to the subrouter above
+	if corsEnabler != nil {
+		a.router = corsEnabler.Handler(recipeRouter)
+	} else {
+		a.router = recipeRouter
+	}
+
 	a.storage = repo
 
 	return a
@@ -89,12 +96,11 @@ func (a *api) fetchAllRecipes(w http.ResponseWriter, r *http.Request) {
 	recipes, _ := a.storage.FetchAllRecipes()
 	for _, v := range recipes {
 		sumary = append(sumary, &recipeSumary{
-												ID: v.ID, 
-												Name: v.Name, 
-												CreationTime: 
-												v.CreationTime, 
-												UpdatedTime: v.UpdatedTime, 
-												Location: fmt.Sprintf("%s/%s", r.URL.RequestURI(), v.ID)}) //Figure out how to get scheme and hostname with or without reverse proxy
+			ID:           v.ID,
+			Name:         v.Name,
+			CreationTime: v.CreationTime,
+			UpdatedTime:  v.UpdatedTime,
+			Location:     fmt.Sprintf("%s/%s", r.URL.RequestURI(), v.ID)}) //Figure out how to get scheme and hostname with or without reverse proxy
 	}
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(sumary)
