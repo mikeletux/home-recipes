@@ -6,15 +6,14 @@ type Guid interface {
 	GetGUID() string
 }
 
-type GuidXid struct {
-	id xid.ID
-}
+type GuidXid struct{}
 
 func NewGuidXid() Guid {
-	guid := &GuidXid{xid.New()}
+	guid := &GuidXid{}
 	return guid
 }
 
 func (x *GuidXid) GetGUID() string {
-	return x.id.String()
+	guid := xid.New()
+	return guid.String()
 }

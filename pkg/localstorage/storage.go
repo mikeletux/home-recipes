@@ -30,7 +30,7 @@ IMPORTANT: if a sample of recipes is passed, filename MUST be set to an empty st
 			BOTH CANNOT BE SET. IT WILL PANIC.
 			A nil, "" scenario is possible if a only in-memory scenario is desired with no sample dataset.
 */
-func NewLocalStorage(recipes map[string]*recipe.Recipe, filepath string, guidGenerator guid.Guid) *LocalStorage {
+func NewLocalStorage(recipes map[string]*recipe.Recipe, filepath string, guidGenerator guid.Guid) recipe.RecipeRepository {
 	//Use file scenario
 	if recipes == nil && len(filepath) > 0 {
 		recipes, err := readFromFile(filepath)
@@ -151,7 +151,7 @@ func writeToFile(filepath string, recipes map[string]*recipe.Recipe) error {
 	if err != nil {
 		return fmt.Errorf("The was an error when marshalling json: %s", err)
 	}
-	err = ioutil.WriteFile(filepath, b, os.FileMode(os.O_WRONLY|os.O_CREATE))
+	err = ioutil.WriteFile(filepath, b, 0644)
 	if err != nil {
 		return fmt.Errorf("The was an error when writing to file: %s", err)
 	}

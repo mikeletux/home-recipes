@@ -10,6 +10,8 @@ import (
 	"syscall"
 	"time"
 
+	data "github.com/mikeletux/home-recipes/cmd/sample-data"
+	recipe "github.com/mikeletux/home-recipes/pkg"
 	"github.com/mikeletux/home-recipes/pkg/guid"
 	"github.com/mikeletux/home-recipes/pkg/localstorage"
 	"github.com/mikeletux/home-recipes/pkg/server"
@@ -17,20 +19,29 @@ import (
 
 func main() {
 	envPort := os.Getenv("RECIPES_PORT")
-	//envWithData := os.Getenv("RECIPES_SAMPLE_DATA")
+	envWithData := os.Getenv("RECIPES_SAMPLE_DATA")
+	filepath := os.Getenv("RECIPES_FILEPATH")
+
 	if len(envPort) == 0 {
 		envPort = "8080"
 	}
-	/*var recipes map[string]*recipe.Recipe
-	if envWithData == "yes" {
-		log.Print("Loading sample data into server")
-		recipes = data.SampleRecipes
-	}*/
+
 	//Initialize GUID struct
 	guid := guid.NewGuidXid()
 
-	//storage := localstorage.NewLocalStorage(recipes, "", guid)
-	storage := localstorage.NewLocalStorage(nil, "./recipes.json", guid)
+	var storage recipe.RecipeRepository
+	if len(filepath) > 0 {
+		storage = localstorage.NewLocalStorage(nil, filepath, guid)
+	} else {
+		var recipes map[string]*recipe.Recipe
+		if envWithData == "yes" {
+			log.Print("Loading sample data into server")
+			recipes = data.SampleRecipes
+		}
+
+		storage = localstorage.NewLocalStorage(recipes, "", guid)
+	}
+
 	s := server.New(storage)
 
 	srv := http.Server{
