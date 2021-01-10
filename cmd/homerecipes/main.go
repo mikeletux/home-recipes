@@ -16,6 +16,7 @@ import (
 	"github.com/mikeletux/home-recipes/pkg/guid"
 	"github.com/mikeletux/home-recipes/pkg/localstorage"
 	"github.com/mikeletux/home-recipes/pkg/server"
+	rscors "github.com/rs/cors"
 )
 
 func main() {
@@ -44,7 +45,10 @@ func main() {
 	}
 
 	//Initialize Cors
-	corsEnabler := cors.NewRsCorsEnabler(nil) //nil will make the RSCors constructor to use the Default options
+	options := rscors.Options{
+		AllowedMethods: []string{"GET", "POST", "DELETE"},
+	}
+	corsEnabler := cors.NewRsCorsEnabler(&options) //nil will make the RSCors constructor to use the Default options
 	//Inject storage and cors enabler to the server constructor
 	s := server.New(storage, corsEnabler)
 
