@@ -14,15 +14,25 @@ In order to run this app in a docker container, please follow the steps below:
     ~~~
     docker build -t home-recipes .
     ~~~
-  - Run the container
+  - Run the container without persistent storage (DEV)
     ~~~
     docker run -d -p 8080:8080 \
            -e "RECIPES_PORT=8080" \
            -e "RECIPES_SAMPLE_DATA=yes" \
            --name home-recipes home-recipes
     ~~~
+    - Run the container with persistent storage (PROD)
+    ~~~
+    docker run -d -p 8080:8080 \
+           -e "RECIPES_PORT=8080" \
+           -e "RECIPES_FILEPATH=/var/home-recipes/recipes.json" \
+           -v /home/mikeletux/storage-test:/var/home-recipes \
+           --name home-recipes home-recipes
+    ~~~
+
     **Environment variables**  
-      - RECIPES_PORT: Port where the RestAPI is going to listen.
-      - RECIPES_SAMPLE_DATA: Either if you want to load some sample data (yes) or not (empty string).
+      - *RECIPES_PORT*: Port where the RestAPI is going to listen.
+      - *RECIPES_SAMPLE_DATA*: Either if you want to load some sample data (yes) or not (empty string).
+      - *RECIPES_FILEPATH*: Path of the JSON file that will store the recipes.
   
 /Miguel Sama 2021
