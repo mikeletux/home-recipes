@@ -6,4 +6,4 @@ COPY . .
 RUN go install -v ./cmd/homerecipes/. \
     && mkdir -p /var/home-recipes
 
-CMD ["homerecipes"]
+CMD homerecipes
