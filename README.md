@@ -25,8 +25,8 @@ In order to run this app in a docker container, please follow the steps below:
     ~~~
     docker run -d -p 8080:8080 \
            -e "RECIPES_PORT=8080" \
-           -e "RECIPES_FILEPATH=/var/home-recipes/recipes.json" \
-           -v /home/mikeletux/storage-test:/var/home-recipes \
+           -e "RECIPES_FILEPATH=/go/home-recipes/storage/recipes.json" \
+           -v /home/mikeletux/storage-test:/go/home-recipes/storage \
            --name home-recipes home-recipes
     ~~~
 
