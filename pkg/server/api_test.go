@@ -212,3 +212,66 @@ func TestRemoveSpecificRecipe(t *testing.T) {
 		t.Errorf("Recipe exist after handler execution")
 	}
 }
+
+func TestUpdateSpecificRecipe(t *testing.T) {
+	//Create recipe data to be updated
+	recipe := recipe.Recipe{
+		Name:        "Sausages with white wine UPDATED",
+		Image:       "https://updated.org",
+		Ingredients: []string{"update1", "update2"},
+		Text:        "All was updated",
+	}
+	//Create mocked body
+	b, err := json.Marshal(recipe)
+	if err != nil {
+		t.Fatalf("could not create mocked body %v", err)
+	}
+	//Create request
+	req, err := http.NewRequest("PATCH", fmt.Sprintf("/api/%s/%s", apiVersion, recipesEndpoint), bytes.NewBuffer(b))
+	if err != nil {
+		t.Fatalf("could not create request: %v", err)
+	}
+	//Set URL vars
+	sampleID := "01d3xz7cn92aks9hapsz4d5dp9"
+	vars := map[string]string{
+		"ID": sampleID,
+	}
+	req = mux.SetURLVars(req, vars)
+
+	//Initialize GUID struct
+	guid := guid.NewGuidXid()
+	//Create fake API
+	repo := localstorage.NewLocalStorage(data.SampleRecipes, "", guid)
+	a := New(repo, nil)
+
+	//Create recorder
+	rec := httptest.NewRecorder()
+
+	//Execute the handler
+	a.updateSpecificRecipe(rec, req)
+	res := rec.Result()
+	res.Body.Close()
+
+	//Do checks
+	if res.StatusCode != http.StatusAccepted {
+		t.Errorf("The status code is different from 202 Accepted")
+	}
+
+	gotRecipe, err := repo.FetchRecipeByID(sampleID)
+
+	if gotRecipe.Name != "Sausages with white wine UPDATED" {
+		t.Errorf("The updated name is not the one it's supposed to be")
+	}
+	if gotRecipe.Image != "https://updated.org" {
+		t.Errorf("The updated image is not the one it's supposed to be")
+	}
+	if len(gotRecipe.Ingredients) != len(recipe.Ingredients) {
+		t.Errorf("The updated ingredients len is not the one it's supposed to be")
+	}
+	if gotRecipe.Text != "All was updated" {
+		t.Errorf("The updated image is not the one it's supposed to be")
+	}
+	if gotRecipe.UpdatedTime == gotRecipe.CreationTime {
+		t.Errorf("The updated time must not be the same as created time, since it was updated")
+	}
+}

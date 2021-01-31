@@ -126,7 +126,24 @@ func (l *LocalStorage) DeleteRecipe(ID string) error {
 }
 
 func (l *LocalStorage) UpdateRecipe(ID string, recipe *recipe.Recipe) error {
-	//TODO
+	//Get recipe
+	r, ok := l.recipes[ID]
+	if !ok {
+		return fmt.Errorf("The recipe doesn't exist")
+	}
+	if len(recipe.Name) > 0 {
+		r.Name = recipe.Name
+	}
+	if len(recipe.Image) > 0 {
+		r.Image = recipe.Image
+	}
+	if len(recipe.Ingredients) > 0 {
+		r.Ingredients = recipe.Ingredients
+	}
+	if len(recipe.Text) > 0 {
+		r.Text = recipe.Text
+	}
+	r.UpdatedTime = time.Now()
 	return nil
 }
 

@@ -31,6 +31,7 @@ type Server interface {
 	fetchAllRecipes(w http.ResponseWriter, r *http.Request)
 	fetchSpecificRecipe(w http.ResponseWriter, r *http.Request)
 	removeSpecificRecipe(w http.ResponseWriter, r *http.Request)
+	updateSpecificRecipe(w http.ResponseWriter, r *http.Request)
 }
 
 func New(repo recipe.RecipeRepository, corsEnabler cors.CorsEnabler) Server {
@@ -47,7 +48,7 @@ func New(repo recipe.RecipeRepository, corsEnabler cors.CorsEnabler) Server {
 	//Delete a specific recipe (DELETE /recipes/{ID:[a-zA-Z0-9_]+})
 	recipeRouter.HandleFunc(fmt.Sprintf("/%s/{ID:[a-zA-Z0-9_]+}", recipesEndpoint), a.removeSpecificRecipe).Methods(http.MethodDelete)
 	//Update a specific recipe
-	//TBD
+	recipeRouter.HandleFunc(fmt.Sprintf("/%s/{ID:[a-zA-Z0-9_]+}", recipesEndpoint), a.updateSpecificRecipe).Methods(http.MethodPatch)
 
 	//If interface is different from nil, wrap handler. Otherwise set it to the subrouter above
 	if corsEnabler != nil {
@@ -128,6 +129,26 @@ func (a *api) removeSpecificRecipe(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusNotFound)
 		json.NewEncoder(w).Encode("Recipe not found")
 		return
+	}
+	w.WriteHeader(http.StatusAccepted)
+}
+
+func (a *api) updateSpecificRecipe(w http.ResponseWriter, r *http.Request) {
+	//Get vars
+	vars := mux.Vars(r)
+	//Decode recipe
+	recipe := &recipe.Recipe{}
+	err := json.NewDecoder(r.Body).Decode(recipe)
+	if err != nil {
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusInternalServerError)
+		json.NewEncoder(w).Encode("JSON format not valid")
+	}
+	err = a.storage.UpdateRecipe(vars["ID"], recipe)
+	if err != nil {
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusInternalServerError)
+		json.NewEncoder(w).Encode(err)
 	}
 	w.WriteHeader(http.StatusAccepted)
 }
