@@ -8,4 +8,4 @@ RUN mkdir -p /go/home-recipes/storage \
 
 EXPOSE 8080/tcp
 
-ENTRYPOINT ["/go/home-recipes/home-recipes"]
+CMD ["/go/home-recipes/home-recipes"]
